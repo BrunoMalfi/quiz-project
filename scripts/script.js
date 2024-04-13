@@ -3,6 +3,9 @@ const API_URL = "https://opentdb.com"
 const numberOfQuestions = 10 ;
 let questionsArray =[] 
 let questionArrayCounterId = 0
+let maxPoints = 0
+let cumulativePoint = 0
+let cumulativePointPercentage =0
 const startQuiz = document.getElementById('startQuiz')
 const categoriesButtonsDiv = document.getElementById('categoriesButtonsDiv')
 const questionsDiv = document.getElementById('questionsDiv')
@@ -23,6 +26,36 @@ function generateLMGTFYLink(query) {
     return url;
 }
 
+const addHtmlElementToDiv =(elementToAdd,fatherDivId,elementText,elementAtributesObjectList,classList)=>{
+//elementToAdd : html element to add like <p>, <a> or <button>
+    if(elementToAdd.length != 0 && fatherDivId != 0){
+        const fatherDiv = document.getElementById(fatherDivId)
+        const elementToAddHtml = document.createElement(elementToAdd);
+        const elementToAddHtmlText = document.createTextNode(elementText);
+        // loop for each elementAtributesObjectList and add eachone elementToAddHtml.setAttribute("type","button")
+        //loop for each classList and use .classList.add()
+        fatherDiv.appendChild(elementToAddHtml);
+
+    }else{
+        console.error("addHtmlElementToDiv can't work without first and second parameters")
+    }
+
+}
+
+const howMuchPointsAddsThisQuestion = (questionDifficulty)=>{
+    switch(questionDifficulty){
+        case "easy":
+            return 1 ; 
+        case "medium":
+            return 2
+        case "hard":
+            return 3
+        default:
+        console.error('Something went wrong when calculation of howMuchPointsAddsThisQuestion depending of the difficulty happened')
+        return "Nan"
+    }
+}
+
 const showNextQuestion = (event)=>{
     questionArrayCounterId++
     questionsTextDiv.innerHTML=""
@@ -37,18 +70,30 @@ const showNextQuestion = (event)=>{
         const quizEndParagraphText = document.createTextNode("great job quiz is over");
         quizEndParagraph.appendChild(quizEndParagraphText);
         quizEndDiv.appendChild(quizEndParagraph)
+        const quizEndParagraphPoints = document.createElement("p");
+        const quizEndParagraphPointsText = document.createTextNode("Score :"+cumulativePointPercentage+"%");
+        quizEndParagraphPoints.appendChild(quizEndParagraphPointsText);
+        quizEndDiv.appendChild(quizEndParagraphPoints)
+        const btnPlayAgain = document.createElement("button");
+        const btnPlayAgainText = document.createTextNode("PlayAgain");
+        btnPlayAgain.setAttribute("type","button")
+        btnPlayAgain.appendChild(btnPlayAgainText);
+        btnPlayAgain.addEventListener('click',startQuizFunction)
+        quizEndDiv.appendChild(btnPlayAgain)
         //quizEndDiv
     }
     
 
 }
 
-const showAnswerRwsoult=(event)=>{
+const showAnswerResoult=(event)=>{
      if(event.target.getAttribute("rightanswer") =="true"){
          const AnswerFeedbackParagraph = document.createElement("p");
          const AnswerFeedbackParagraphText = document.createTextNode("Rigt, good job");
          AnswerFeedbackParagraph.appendChild(AnswerFeedbackParagraphText);
          answerFeedbackDiv.appendChild(AnswerFeedbackParagraph)
+         cumulativePoint=cumulativePoint + howMuchPointsAddsThisQuestion(questionsArray[questionArrayCounterId].difficulty)
+         cumulativePointPercentage=(cumulativePoint/maxPoints)*100
      }else{
          const originalQuestion =  questionsTextDiv.children[0].childNodes[0].nodeValue ;
          const link = generateLMGTFYLink(originalQuestion);
@@ -69,6 +114,7 @@ const showAnswerRwsoult=(event)=>{
     Object.values(event.target.parentElement.children).map((btn)=>{
         btn.getAttribute("rightanswer") =="true" ? btn.classList.add("correct"):btn.classList.add("wrong")
         btn.setAttribute("disabled","")
+        
     })
     // TODO : función para botón
     const btnNext = document.createElement("button");
@@ -77,6 +123,7 @@ const showAnswerRwsoult=(event)=>{
      btnNext.appendChild(btnNextText);
      btnNext.addEventListener('click',showNextQuestion)
      nextQuestionButtonDiv.appendChild(btnNext) 
+     console.log('cumulativePointPercentage : ', cumulativePointPercentage)
 
 }
 
@@ -98,7 +145,7 @@ const showQuestionInTheHtml =(questionObject)=>{
         possibleAnswer == questionObject.correct_answer ?btn.setAttribute("rightanswer","true"):btn.setAttribute("rightanswer","false")
         //btn.setAttribute("class","col col-2 btn btn-sm btn-primary m-1")
         btn.appendChild(btnText);
-        btn.addEventListener('click',showAnswerRwsoult)
+        btn.addEventListener('click',showAnswerResoult)
        // console.log('category  boton : ',btn)
         answerButtonsDiv.appendChild(btn) 
     })
@@ -117,6 +164,10 @@ const chooseCategoryByButton=(event)=>{
         console.log('questions : ', res.data.results)
         categoriesButtonsDiv.classList.add("hide")
         questionsArray = res.data.results
+        questionsArray.map((question)=>{
+            //console.log('question difficulty : ', question.difficulty)
+            maxPoints= maxPoints + howMuchPointsAddsThisQuestion(question.difficulty)
+        })
         showQuestionInTheHtml(questionsArray[0])
     })
     .catch((err) => console.error(err));
@@ -124,10 +175,19 @@ const chooseCategoryByButton=(event)=>{
 }
 
 const startQuizFunction = () =>{
+    quizEndDiv.innerHTML=""
+    //startQuiz.classList.remove("hide")
     console.log('Start the game : ',' :) ')
     axios.get(API_URL+"/api_category.php")
     .then((res) =>{ 
         //console.log(res.data.trivia_categories)
+        categoriesButtonsDiv.classList.remove("hide")
+        questionsArray =[] 
+        questionArrayCounterId = 0
+        maxPoints = 0
+        cumulativePoint = 0
+        cumulativePointPercentage =0
+
         res.data.trivia_categories.map((category)=>{
             const btn = document.createElement("button");
             const btnText = document.createTextNode(category.name);

@@ -6,7 +6,9 @@ let questionArrayCounterId = 0
 let maxPoints = 0
 let cumulativePoint = 0
 let cumulativePointPercentage =0
-const startQuiz = document.getElementById('startQuiz')
+let nickName; 
+const userDiv = document.getElementById('userDiv')
+const startQuizDiv = document.getElementById('startQuizDiv')
 const categoriesButtonsDiv = document.getElementById('categoriesButtonsDiv')
 const questionsDiv = document.getElementById('questionsDiv')
 const questionsTextDiv = document.getElementById('questionsTextDiv')
@@ -14,7 +16,10 @@ const answerButtonsDiv = document.getElementById('answerButtonsDiv')
 const answerFeedbackDiv = document.getElementById('answerFeedbackDiv')
 const nextQuestionButtonDiv = document.getElementById('nextQuestionButtonDiv')
 const quizEndDiv = document.getElementById('quizEndDiv')
+const userForm = document.getElementById('userForm')
 const startQuizBtn = document.getElementById('startQuizBtn')
+const submitNickName = document.getElementById('submitNickName')
+const nickNameInput = document.getElementById('nickNameInput')
 
 
 function generateLMGTFYLink(query) {
@@ -119,7 +124,17 @@ const showQuestionInTheHtml =(questionObject)=>{
 
 const chooseCategoryByButton=(event)=>{
     //console.log('Event', event.target.getAttribute("apiid"))
-    //console.log('Event', event.target.childNodes[0].data)
+    //console.log('Event', event.target.childNodes[0].textContent)
+    const category= event.target.childNodes[0].textContent
+    const userObject= JSON.parse(localStorage.getItem(nickName))
+    if(userObject.categoryArray === undefined){
+        userObject.categoryArray=[category]
+    }else if (userObject.categoryArray.filter((categoryInArr)=> category===categoryInArr).length === 0){
+        userObject.categoryArray.push(category)}
+    
+    console.log('userObject : ', userObject)
+    localStorage.setItem(nickName,JSON.stringify(userObject))
+
     const apiId=event.target.getAttribute("apiid")
     const API_URL_NEW= API_URL+"/api.php?amount="+numberOfQuestions+"&category="+apiId+"&type=multiple" 
     console.log('Event', API_URL_NEW)
@@ -155,10 +170,22 @@ const startQuizFunction = () =>{
         res.data.trivia_categories.map((category)=>{
             const btn = addHtmlElementToDiv("button","categoriesButtonsDiv",category.name,{type:"button",apiId:category.id})
             btn.addEventListener('click',chooseCategoryByButton)
-            startQuiz.classList.add("hide")
+            startQuizDiv.classList.add("hide")
         })
     })
     .catch((err) => console.error(err));
+
+}
+const saveUserName =(event)=>{
+    event.preventDefault()
+     console.log('nickNameInput : ', nickNameInput.value)
+     nickName=nickNameInput.value
+     const userObjec ={ name:nickName,test:"test2333"}
+    if(localStorage.getItem(nickName) === null){
+        localStorage.setItem(nickName,JSON.stringify(userObjec))
+    }
+     startQuizDiv.classList.remove("hide")
+     userDiv.classList.add("hide")
 
 }
 
@@ -174,5 +201,34 @@ const startQuizFunction = () =>{
 
 
 
-
 startQuizBtn.addEventListener('click',startQuizFunction)
+userForm.addEventListener("submit", saveUserName);
+
+
+// const labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio'];
+
+//   const data = {
+//     labels: labels,
+//     datasets: [{
+//       label: 'Mi primera gráfica',
+//       backgroundColor: 'rgb(255, 99, 132)',
+//       borderColor: 'rgb(255, 99, 132)',
+//       data: [0, 10, 5, 2, 20, 30, 45],
+//     }]
+//   };
+
+//   const config = {
+//     type: 'bar',
+//     data: data,
+//     options: {}
+//   };
+// addHtmlElementToDiv("div","grafficsDiv","",{id:"user1"})
+// addHtmlElementToDiv("p","user1","soy user1")
+// addHtmlElementToDiv("canvas","user1","",{id:"myChart"})
+// addHtmlElementToDiv("canvas","user1","",{id:"myChart1"})
+// addHtmlElementToDiv("div","grafficsDiv","",{id:"user2"})
+// addHtmlElementToDiv("p","user2","soy user2")
+// addHtmlElementToDiv("canvas","user2","",{id:"myChart2"})
+// const myChart = new Chart('myChart', config);
+// const myChart1 = new Chart('myChart1', config);
+// const myChart2 = new Chart('myChart2', config);

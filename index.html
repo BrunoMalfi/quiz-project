@@ -10,7 +10,15 @@
     <h1>Quiz</h1>
     <p>...</p>
     
-    <div id="startQuiz">
+    <div id="userDiv">
+        <form id="userForm">
+            <label for="nickname">Nick name : </label><br>
+            <input type="text" id="nickNameInput"value="Philipe288"><br>
+            <input type="submit"id="submitNickName" value="Submit">
+        </form>
+    </div>
+
+    <div id="startQuizDiv" class="hide">
         <button type="button" id="startQuizBtn">Start Quiz</button> 
     </div>
 
@@ -40,9 +48,12 @@
     <div id="testDiv">
 
     </div>
+    <div id="grafficsDiv">
+        <!-- <canvas id="myChart"></canvas> -->
+    </div>
 
     
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="./scripts/script.js"></script>
 </body>

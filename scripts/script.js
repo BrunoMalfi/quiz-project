@@ -41,7 +41,6 @@ const addHtmlElementToDiv =(elementToAdd,fatherDivId,elementText="",elementAtrib
     }else{
         console.error("addHtmlElementToDiv can't work without first and second parameters")
     }
-
 }
 
 const howMuchPointsAddsThisQuestion = (questionDifficulty)=>{
@@ -68,21 +67,10 @@ const showNextQuestion = (event)=>{
         showQuestionInTheHtml(questionsArray[questionArrayCounterId])
     }else{
         //finish quiz
-        const quizEndParagraph = document.createElement("p");
-        const quizEndParagraphText = document.createTextNode("great job quiz is over");
-        quizEndParagraph.appendChild(quizEndParagraphText);
-        quizEndDiv.appendChild(quizEndParagraph)
-        const quizEndParagraphPoints = document.createElement("p");
-        const quizEndParagraphPointsText = document.createTextNode("Score :"+cumulativePointPercentage+"%");
-        quizEndParagraphPoints.appendChild(quizEndParagraphPointsText);
-        quizEndDiv.appendChild(quizEndParagraphPoints)
-        const btnPlayAgain = document.createElement("button");
-        const btnPlayAgainText = document.createTextNode("PlayAgain");
-        btnPlayAgain.setAttribute("type","button")
-        btnPlayAgain.appendChild(btnPlayAgainText);
-        btnPlayAgain.addEventListener('click',startQuizFunction)
-        quizEndDiv.appendChild(btnPlayAgain)
-        //quizEndDiv
+        addHtmlElementToDiv("p","quizEndDiv","great job, quiz is over")
+        addHtmlElementToDiv("p","quizEndDiv","Score :"+cumulativePointPercentage+"%")
+        const btnPlayAgain = addHtmlElementToDiv("button","quizEndDiv","Play again",{type:"button"})
+        btnPlayAgain.addEventListener('click',startQuizFunction)  
     }
     
 
@@ -107,14 +95,9 @@ const showAnswerResoult=(event)=>{
         btn.setAttribute("disabled","")
         
     })
-    // TODO : función para botón
-    const btnNext = document.createElement("button");
-     const btnNextText = document.createTextNode("Next question");
-     btnNext.setAttribute("type","button")
-     btnNext.appendChild(btnNextText);
-     btnNext.addEventListener('click',showNextQuestion)
-     nextQuestionButtonDiv.appendChild(btnNext) 
-     console.log('cumulativePointPercentage : ', cumulativePointPercentage)
+    const btnNext = addHtmlElementToDiv("button","nextQuestionButtonDiv","Next question",{type:"button"})
+    btnNext.addEventListener('click',showNextQuestion)
+    console.log('cumulativePointPercentage : ', cumulativePointPercentage)
 
 }
 
@@ -122,23 +105,13 @@ const showAnswerResoult=(event)=>{
 const showQuestionInTheHtml =(questionObject)=>{
     const possibleAnswersArr=questionObject.incorrect_answers
     possibleAnswersArr.splice((possibleAnswersArr.length+1) * Math.random() | 0, 0,questionObject.correct_answer)
-
-    const questionParagraph = document.createElement("p");
-    const questionParagraphText = document.createTextNode(questionObject.question);
-    questionParagraph.appendChild(questionParagraphText);
-    questionsTextDiv.appendChild(questionParagraph)
+    addHtmlElementToDiv("p","questionsTextDiv",questionObject.question)
+    
     
     possibleAnswersArr.map((possibleAnswer)=>{
-        //función para hacer botones
-        const btn = document.createElement("button");
-        const btnText = document.createTextNode(possibleAnswer);
-        btn.setAttribute("type","button")
-        possibleAnswer == questionObject.correct_answer ?btn.setAttribute("rightanswer","true"):btn.setAttribute("rightanswer","false")
-        //btn.setAttribute("class","col col-2 btn btn-sm btn-primary m-1")
-        btn.appendChild(btnText);
+        const rightAnswerValue = possibleAnswer == questionObject.correct_answer ? "true":"false"
+        const btn = addHtmlElementToDiv("button","answerButtonsDiv",possibleAnswer,{type:"button",rightanswer:rightAnswerValue})
         btn.addEventListener('click',showAnswerResoult)
-       // console.log('category  boton : ',btn)
-        answerButtonsDiv.appendChild(btn) 
     })
 
 }
@@ -180,20 +153,10 @@ const startQuizFunction = () =>{
         cumulativePointPercentage =0
 
         res.data.trivia_categories.map((category)=>{
-            const btn = document.createElement("button");
-            const btnText = document.createTextNode(category.name);
-            btn.setAttribute("type","button")
-            btn.setAttribute("apiId",category.id)
-            //btn.setAttribute("class","col col-2 btn btn-sm btn-primary m-1")
-            btn.appendChild(btnText);
+            const btn = addHtmlElementToDiv("button","categoriesButtonsDiv",category.name,{type:"button",apiId:category.id})
             btn.addEventListener('click',chooseCategoryByButton)
-            //console.log('category  botones : ',btn)
-            categoriesButtonsDiv.appendChild(btn)
             startQuiz.classList.add("hide")
-            
-
         })
-    
     })
     .catch((err) => console.error(err));
 

@@ -26,16 +26,18 @@ function generateLMGTFYLink(query) {
     return url;
 }
 
-const addHtmlElementToDiv =(elementToAdd,fatherDivId,elementText,elementAtributesObjectList,classList)=>{
-//elementToAdd : html element to add like <p>, <a> or <button>
-    if(elementToAdd.length != 0 && fatherDivId != 0){
+const addHtmlElementToDiv =(elementToAdd,fatherDivId,elementText="",elementAtributesObjectList=null,classListArr=null)=>{
+    //elementToAdd : html element to add like <p>, <a> or <button>
+    // example how to use function : addHtmlElementToDiv("p","testDiv","I'm a test paragraph",{attribute1:"test",attribute2:"test2"},["wrong"])
+    if(elementToAdd.length != 0 && fatherDivId.length != 0){
         const fatherDiv = document.getElementById(fatherDivId)
         const elementToAddHtml = document.createElement(elementToAdd);
         const elementToAddHtmlText = document.createTextNode(elementText);
-        // loop for each elementAtributesObjectList and add eachone elementToAddHtml.setAttribute("type","button")
-        //loop for each classList and use .classList.add()
+        elementToAddHtml.appendChild(elementToAddHtmlText);
+        if(elementAtributesObjectList !== null & elementAtributesObjectList === Object(elementAtributesObjectList)){ Object.keys(elementAtributesObjectList).map((attribute)=>{elementToAddHtml.setAttribute(attribute,elementAtributesObjectList[attribute])})}
+        if(classListArr !== null & Array.isArray(classListArr) ){classListArr.map((classToAdd) => elementToAddHtml.classList.add(classToAdd))}
         fatherDiv.appendChild(elementToAddHtml);
-
+        return elementToAddHtml
     }else{
         console.error("addHtmlElementToDiv can't work without first and second parameters")
     }
@@ -88,26 +90,15 @@ const showNextQuestion = (event)=>{
 
 const showAnswerResoult=(event)=>{
      if(event.target.getAttribute("rightanswer") =="true"){
-         const AnswerFeedbackParagraph = document.createElement("p");
-         const AnswerFeedbackParagraphText = document.createTextNode("Rigt, good job");
-         AnswerFeedbackParagraph.appendChild(AnswerFeedbackParagraphText);
-         answerFeedbackDiv.appendChild(AnswerFeedbackParagraph)
+         addHtmlElementToDiv("p","answerFeedbackDiv","Rigt, good job")
          cumulativePoint=cumulativePoint + howMuchPointsAddsThisQuestion(questionsArray[questionArrayCounterId].difficulty)
          cumulativePointPercentage=(cumulativePoint/maxPoints)*100
      }else{
-         const originalQuestion =  questionsTextDiv.children[0].childNodes[0].nodeValue ;
-         const link = generateLMGTFYLink(originalQuestion);
-         console.log('Let me google that for you', link);
-          const AnswerFeedbackParagraph = document.createElement("p");
-         const AnswerFeedbackParagraphText = document.createTextNode("wrong, maybe you'd need some help. Please check the following link");
-          AnswerFeedbackParagraph.appendChild(AnswerFeedbackParagraphText);
-          answerFeedbackDiv.appendChild(AnswerFeedbackParagraph)
-          const AnswerFeedbackLink = document.createElement("a");
-          const AnswerFeedbackLinkText = document.createTextNode("Click here if you're ready to find out the hidden humanity knowledge secret");
-          AnswerFeedbackLink.setAttribute("href",link)
-          AnswerFeedbackLink.setAttribute("target","_blank")
-          AnswerFeedbackLink.appendChild(AnswerFeedbackLinkText)
-          answerFeedbackDiv.appendChild(AnswerFeedbackLink)
+        const originalQuestion =  questionsTextDiv.children[0].childNodes[0].nodeValue ;
+        const link = generateLMGTFYLink(originalQuestion);
+        console.log('Let me google that for you', link);
+        addHtmlElementToDiv("p","answerFeedbackDiv","wrong, maybe you'd need some help. Please check the following link :")
+        addHtmlElementToDiv("a","answerFeedbackDiv","Help",{href:link,target:"_blank"})
 
      }
     // changing all buttons collors if  answer is right or wrong
@@ -207,8 +198,6 @@ const startQuizFunction = () =>{
     .catch((err) => console.error(err));
 
 }
-
-
 
 
 

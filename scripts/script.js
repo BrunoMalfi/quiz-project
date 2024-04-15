@@ -6,7 +6,8 @@ let questionArrayCounterId = 0
 let maxPoints = 0
 let cumulativePoint = 0
 let cumulativePointPercentage =0
-let nickName; 
+let nickName;
+let categoryMain;
 const userDiv = document.getElementById('userDiv')
 const startQuizDiv = document.getElementById('startQuizDiv')
 const categoriesButtonsDiv = document.getElementById('categoriesButtonsDiv')
@@ -31,6 +32,7 @@ function generateLMGTFYLink(query) {
     return url;
 }
 
+ 
 const addHtmlElementToDiv =(elementToAdd,fatherDivId,elementText="",elementAtributesObjectList=null,classListArr=null)=>{
     //elementToAdd : html element to add like <p>, <a> or <button>
     // example how to use function : addHtmlElementToDiv("p","testDiv","I'm a test paragraph",{attribute1:"test",attribute2:"test2"},["wrong"])
@@ -48,6 +50,45 @@ const addHtmlElementToDiv =(elementToAdd,fatherDivId,elementText="",elementAtrib
     }
 }
 
+const showStatistics =()=>{
+    for (i = 0; i < localStorage.length; i++) {
+        const userObject= JSON.parse(localStorage.getItem(localStorage.key(i)))
+        console.log('testing Local Storage ', userObject)
+        addHtmlElementToDiv("div","grafficsDiv","",{id:userObject.name})
+        addHtmlElementToDiv("p",userObject.name,"soy"+userObject.name)
+        //mover a función más adelante
+        userObject.categoryArray.forEach((categoryObject)=>{
+            //grágfica nueva
+            let labelsId=0;
+            const labels = categoryObject.gameArr.map((score)=>{
+                labelsId++
+                return "S"+(labelsId)
+            })
+        
+            const data = {
+                labels: labels,
+                datasets: [{
+                    label: categoryObject.name,
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: categoryObject.gameArr,
+                }]
+            };
+            const config = {
+                type: 'bar',
+                data: data,
+                options: {}
+            };
+            console.log('config : ', config)
+            addHtmlElementToDiv("canvas",userObject.name,"",{id:userObject.name+categoryObject.name})
+            const myChart = new Chart(userObject.name+categoryObject.name, config);
+
+        })
+        
+    }
+ }
+
+
 const howMuchPointsAddsThisQuestion = (questionDifficulty)=>{
     switch(questionDifficulty){
         case "easy":
@@ -62,6 +103,22 @@ const howMuchPointsAddsThisQuestion = (questionDifficulty)=>{
     }
 }
 
+const addScoreToUser =(cumulativePointPercentage)=>{
+    const userObject= JSON.parse(localStorage.getItem(nickName))
+    //userObject.categoryArray[name  == categoryMain].game.push(cumulativePointPercentage)
+    let categoryArrCounter =0
+    for (const categoryObject of userObject.categoryArray) {
+        
+        if(categoryObject.name == categoryMain){
+            userObject.categoryArray[categoryArrCounter].gameArr.push(cumulativePointPercentage.toFixed(2))
+            console.log('userObject.categoryArray : ',userObject.categoryArray[categoryArrCounter])
+        }
+        categoryArrCounter++
+    }
+    localStorage.setItem(nickName,JSON.stringify(userObject))
+}
+
+
 const showNextQuestion = (event)=>{
     questionArrayCounterId++
     questionsTextDiv.innerHTML=""
@@ -74,8 +131,10 @@ const showNextQuestion = (event)=>{
         //finish quiz
         addHtmlElementToDiv("p","quizEndDiv","great job, quiz is over")
         addHtmlElementToDiv("p","quizEndDiv","Score :"+cumulativePointPercentage+"%")
+        addScoreToUser(cumulativePointPercentage)
         const btnPlayAgain = addHtmlElementToDiv("button","quizEndDiv","Play again",{type:"button"})
-        btnPlayAgain.addEventListener('click',startQuizFunction)  
+        btnPlayAgain.addEventListener('click',startQuizFunction) 
+        showStatistics()
     }
     
 
@@ -121,19 +180,21 @@ const showQuestionInTheHtml =(questionObject)=>{
 
 }
 
+const addCategoryPlayedByUser =(category)=>{
+    const userObject= JSON.parse(localStorage.getItem(nickName))
+    if(userObject.categoryArray === undefined){
+        userObject.categoryArray=[{"name":category,"gameArr":[]}]
+    }else if (userObject.categoryArray.filter((categoryInArr)=> category===categoryInArr.name).length === 0){   
+        userObject.categoryArray.push({"name":category,"gameArr":[]})}
+    console.log('userObject : ', userObject)
+    localStorage.setItem(nickName,JSON.stringify(userObject))
+}
 
 const chooseCategoryByButton=(event)=>{
     //console.log('Event', event.target.getAttribute("apiid"))
     //console.log('Event', event.target.childNodes[0].textContent)
-    const category= event.target.childNodes[0].textContent
-    const userObject= JSON.parse(localStorage.getItem(nickName))
-    if(userObject.categoryArray === undefined){
-        userObject.categoryArray=[category]
-    }else if (userObject.categoryArray.filter((categoryInArr)=> category===categoryInArr).length === 0){
-        userObject.categoryArray.push(category)}
-    
-    console.log('userObject : ', userObject)
-    localStorage.setItem(nickName,JSON.stringify(userObject))
+    categoryMain= event.target.childNodes[0].textContent
+    addCategoryPlayedByUser(categoryMain)
 
     const apiId=event.target.getAttribute("apiid")
     const API_URL_NEW= API_URL+"/api.php?amount="+numberOfQuestions+"&category="+apiId+"&type=multiple" 
@@ -203,7 +264,7 @@ const saveUserName =(event)=>{
 
 startQuizBtn.addEventListener('click',startQuizFunction)
 userForm.addEventListener("submit", saveUserName);
-
+showStatistics();
 
 // const labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio'];
 

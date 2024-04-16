@@ -4,44 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proyecto Js Quiz</title>
+    <link rel="stylesheet" href="styles/bootstrap.css">
     <link rel="stylesheet" href="styles/styles.css">
 </head>
 <body>
     <h1>Quiz</h1>
     <p>...</p>
     
-    <div id="userDiv">
+    <div id="userDiv" class="d-flex justify-content-center" >
         <form id="userForm">
-            <label for="nickname">Nick name : </label><br>
-            <input type="text" id="nickNameInput"value="Philipe288"><br>
-            <input type="submit"id="submitNickName" value="Submit">
+            <fieldset>
+                <legend>Logging</legend>
+                <fieldset>
+                    <label for="nickname">Nick name : </label><br>
+                    <input type="text" id="nickNameInput"value="Philipe288"><br>
+                </fieldset>
+                <input type="submit"id="submitNickName" value="Submit" class="btn btn-primary mt-3">
+            </fieldset>
         </form>
     </div>
 
-    <div id="startQuizDiv" class="hide">
-        <button type="button" id="startQuizBtn">Start Quiz</button> 
+    <div id="startQuizDiv" class="d-none d-flex justify-content-center">
+        <button type="button" id="startQuizBtn" class="btn btn-primary mt-3">Start Quiz</button> 
     </div>
 
-    <div id="categoriesButtonsDiv"> 
+    <div id="categoriesButtonsDiv" class="d-none d-flex justify-content-center flex-wrap">
+        <p class="display-5 fw-bolde">Choose the category you want to play</p>
+        
 
     </div>
 
     <div id="questionsDiv">
-        <div id="questionsTextDiv">
+        <div id="questionsTextDiv" class="d-flex flex-column align-items-center">
 
         </div>
-        <div id="answerButtonsDiv">
+        <div id="answerButtonsDiv" class="d-flex justify-content-evenly flex-wrap">
 
         </div>
-        <div id="answerFeedbackDiv">
+        <div id="answerFeedbackDiv" class="d-flex justify-content-center">
 
         </div>
-        <div id="nextQuestionButtonDiv">
+        <div id="nextQuestionButtonDiv" class="d-flex  justify-content-center">
 
         </div>
     </div>
 
-    <div id="quizEndDiv">
+    <div id="quizEndDiv" class="d-flex flex-column justify-content-center">
 
     </div>
 

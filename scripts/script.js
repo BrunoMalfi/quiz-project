@@ -17,6 +17,7 @@ const answerButtonsDiv = document.getElementById('answerButtonsDiv')
 const answerFeedbackDiv = document.getElementById('answerFeedbackDiv')
 const nextQuestionButtonDiv = document.getElementById('nextQuestionButtonDiv')
 const quizEndDiv = document.getElementById('quizEndDiv')
+const grafficsDiv = document.getElementById('grafficsDiv')
 const userForm = document.getElementById('userForm')
 const startQuizBtn = document.getElementById('startQuizBtn')
 const submitNickName = document.getElementById('submitNickName')
@@ -56,9 +57,8 @@ const showStatistics =()=>{
         console.log('testing Local Storage ', userObject)
         addHtmlElementToDiv("div","grafficsDiv","",{id:userObject.name})
         addHtmlElementToDiv("p",userObject.name,"soy"+userObject.name)
-        //mover a función más adelante
         userObject.categoryArray.forEach((categoryObject)=>{
-            //grágfica nueva
+            //new graffics
             let labelsId=0;
             const labels = categoryObject.gameArr.map((score)=>{
                 labelsId++
@@ -118,6 +118,11 @@ const addScoreToUser =(cumulativePointPercentage)=>{
     localStorage.setItem(nickName,JSON.stringify(userObject))
 }
 
+const userLogging =()=>{
+    userDiv.classList.remove("d-none")
+    quizEndDiv.classList.add("d-none")
+    grafficsDiv.classList.add("d-none")
+}
 
 const showNextQuestion = (event)=>{
     questionArrayCounterId++
@@ -129,11 +134,16 @@ const showNextQuestion = (event)=>{
         showQuestionInTheHtml(questionsArray[questionArrayCounterId])
     }else{
         //finish quiz
-        addHtmlElementToDiv("p","quizEndDiv","great job, quiz is over")
-        addHtmlElementToDiv("p","quizEndDiv","Score :"+cumulativePointPercentage+"%")
+        quizEndDiv.classList.remove("d-none")
+        grafficsDiv.classList.remove("d-none")
+        addHtmlElementToDiv("p","quizEndDiv","great job, quiz is over",{},["d-flex","justify-content-center"])
+        addHtmlElementToDiv("p","quizEndDiv","Score :"+cumulativePointPercentage+"%",{},["d-flex","justify-content-center"])
         addScoreToUser(cumulativePointPercentage)
-        const btnPlayAgain = addHtmlElementToDiv("button","quizEndDiv","Play again",{type:"button"})
+        const quizEndButtonsDiv = addHtmlElementToDiv("div","quizEndDiv","",{id:"quizEndButtonsDiv"},["d-flex","justify-content-evenly"])
+        const btnPlayAgain = addHtmlElementToDiv("button","quizEndButtonsDiv","Play again",{type:"button"},["btn","btn-primary","mt-5"])
         btnPlayAgain.addEventListener('click',startQuizFunction) 
+        const btnChangeUser = addHtmlElementToDiv("button","quizEndButtonsDiv","Change usser",{type:"button"},["btn","btn-primary","mt-5"])
+        btnChangeUser.addEventListener('click',userLogging) 
         showStatistics()
     }
     
@@ -155,11 +165,12 @@ const showAnswerResoult=(event)=>{
      }
     // changing all buttons collors if  answer is right or wrong
     Object.values(event.target.parentElement.children).map((btn)=>{
-        btn.getAttribute("rightanswer") =="true" ? btn.classList.add("correct"):btn.classList.add("wrong")
+        btn.classList.remove("btn-primary")
+        btn.getAttribute("rightanswer") =="true" ? btn.classList.add("btn-success"):btn.classList.add("btn-danger")
         btn.setAttribute("disabled","")
         
     })
-    const btnNext = addHtmlElementToDiv("button","nextQuestionButtonDiv","Next question",{type:"button"})
+    const btnNext = addHtmlElementToDiv("button","nextQuestionButtonDiv","Next question",{type:"button"},["btn","btn-primary","mt-5"])
     btnNext.addEventListener('click',showNextQuestion)
     console.log('cumulativePointPercentage : ', cumulativePointPercentage)
 
@@ -169,12 +180,32 @@ const showAnswerResoult=(event)=>{
 const showQuestionInTheHtml =(questionObject)=>{
     const possibleAnswersArr=questionObject.incorrect_answers
     possibleAnswersArr.splice((possibleAnswersArr.length+1) * Math.random() | 0, 0,questionObject.correct_answer)
-    addHtmlElementToDiv("p","questionsTextDiv",questionObject.question)
+    //card
+    addHtmlElementToDiv("div","questionsTextDiv","",{id:"mainCardDiv",style:"max-width: 30rem;"},["card","text-white","bg-info","mb-3"])
+    addHtmlElementToDiv("div","mainCardDiv","",{id:"headerCardDiv"},["card-header","d-flex","justify-content-between"])
+    addHtmlElementToDiv("div","headerCardDiv",(questionArrayCounterId+1)+"/10",{id:"leftHeaderCardDiv"})
+    addHtmlElementToDiv("div","headerCardDiv",cumulativePoint+"/"+maxPoints,{id:"centerHeaderCardDiv"})
+    addHtmlElementToDiv("div","headerCardDiv",cumulativePointPercentage.toFixed(2)+"%",{id:"rightHeaderCardDiv"})
+    addHtmlElementToDiv("div","mainCardDiv","",{id:"bodyCardDiv"},["card-body","d-flex","flex-column","align-items-center"])
+    const background =(difficulty)=>{
+        switch(difficulty){
+            case "easy":
+                return "bg-primary" ; 
+            case "medium":
+                return "bg-warning"
+            case "hard":
+                return "bg-dark"
+        }
+    }
+    addHtmlElementToDiv("h5","bodyCardDiv",questionObject.difficulty.toUpperCase(),{id:"bodyCardH4"},["card-title",background(questionObject.difficulty),"rounded"])
+    addHtmlElementToDiv("p","bodyCardDiv",questionObject.question,{id:"bodyCardParagraph"},["card-text"])
+
+    //
+    //addHtmlElementToDiv("p","questionsTextDiv",questionObject.question)
     
-    
-    possibleAnswersArr.map((possibleAnswer)=>{
+    possibleAnswersArr.forEach((possibleAnswer)=>{
         const rightAnswerValue = possibleAnswer == questionObject.correct_answer ? "true":"false"
-        const btn = addHtmlElementToDiv("button","answerButtonsDiv",possibleAnswer,{type:"button",rightanswer:rightAnswerValue})
+        const btn = addHtmlElementToDiv("button","answerButtonsDiv",possibleAnswer,{type:"button",rightanswer:rightAnswerValue},["btn","btn-primary","gap-3","m-1"])
         btn.addEventListener('click',showAnswerResoult)
     })
 
@@ -202,7 +233,7 @@ const chooseCategoryByButton=(event)=>{
     axios.get(API_URL_NEW)
     .then((res) =>{
         console.log('questions : ', res.data.results)
-        categoriesButtonsDiv.classList.add("hide")
+        categoriesButtonsDiv.classList.add("d-none")
         questionsArray = res.data.results
         questionsArray.map((question)=>{
             //console.log('question difficulty : ', question.difficulty)
@@ -216,12 +247,13 @@ const chooseCategoryByButton=(event)=>{
 
 const startQuizFunction = () =>{
     quizEndDiv.innerHTML=""
-    //startQuiz.classList.remove("hide")
+    grafficsDiv.innerHTML=""
+    //startQuiz.classList.remove("d-none")
     console.log('Start the game : ',' :) ')
     axios.get(API_URL+"/api_category.php")
     .then((res) =>{ 
         //console.log(res.data.trivia_categories)
-        categoriesButtonsDiv.classList.remove("hide")
+        categoriesButtonsDiv.classList.remove("d-none")
         questionsArray =[] 
         questionArrayCounterId = 0
         maxPoints = 0
@@ -229,9 +261,9 @@ const startQuizFunction = () =>{
         cumulativePointPercentage =0
 
         res.data.trivia_categories.map((category)=>{
-            const btn = addHtmlElementToDiv("button","categoriesButtonsDiv",category.name,{type:"button",apiId:category.id})
+            const btn = addHtmlElementToDiv("button","categoriesButtonsDiv",category.name,{type:"button",apiId:category.id},["btn","btn-primary","gap-3","m-1"])
             btn.addEventListener('click',chooseCategoryByButton)
-            startQuizDiv.classList.add("hide")
+            startQuizDiv.classList.add("d-none")
         })
     })
     .catch((err) => console.error(err));
@@ -241,12 +273,12 @@ const saveUserName =(event)=>{
     event.preventDefault()
      console.log('nickNameInput : ', nickNameInput.value)
      nickName=nickNameInput.value
-     const userObjec ={ name:nickName,test:"test2333"}
+     const userObjec ={name:nickName}
     if(localStorage.getItem(nickName) === null){
         localStorage.setItem(nickName,JSON.stringify(userObjec))
     }
-     startQuizDiv.classList.remove("hide")
-     userDiv.classList.add("hide")
+     startQuizDiv.classList.remove("d-none")
+     userDiv.classList.add("d-none")
 
 }
 
@@ -264,7 +296,7 @@ const saveUserName =(event)=>{
 
 startQuizBtn.addEventListener('click',startQuizFunction)
 userForm.addEventListener("submit", saveUserName);
-showStatistics();
+
 
 // const labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio'];
 

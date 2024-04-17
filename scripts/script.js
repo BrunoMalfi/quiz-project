@@ -163,7 +163,8 @@ const showAnswerResoult=(event)=>{
          cumulativePoint=cumulativePoint + howMuchPointsAddsThisQuestion(questionsArray[questionArrayCounterId].difficulty)
          cumulativePointPercentage=(cumulativePoint/maxPoints)*100
      }else{
-        const originalQuestion =  questionsTextDiv.children[0].childNodes[0].nodeValue ;
+        const originalQuestion =  document.getElementById("bodyCardParagraph").childNodes[0].nodeValue//questionsTextDiv.children[0].childNodes[0].nodeValue ;
+        console.log('originalQuestion : ', originalQuestion)
         const link = generateLMGTFYLink(originalQuestion);
         console.log('Let me google that for you', link);
         addHtmlElementToDiv("p","answerFeedbackDiv","wrong, maybe you'd need some help. Please check the following link :")

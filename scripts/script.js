@@ -25,11 +25,8 @@ const nickNameInput = document.getElementById('nickNameInput')
 
 
 function generateLMGTFYLink(query) {
-    // Encode the search query to include it in the URL
     const encodedQuery = encodeURIComponent(query);
-    // Construct the URL for Let Me Google That
     const url = `https://letmegooglethat.com/?q=${encodedQuery}`;
-    // Return the generated URL
     return url;
 }
 
@@ -56,7 +53,7 @@ const showStatistics =()=>{
         const userObject= JSON.parse(localStorage.getItem(localStorage.key(i)))
         console.log('testing Local Storage ', userObject)
         addHtmlElementToDiv("div","grafficsDiv","",{id:userObject.name})
-        addHtmlElementToDiv("p",userObject.name,"soy"+userObject.name)
+        addHtmlElementToDiv("p",userObject.name,"soy "+userObject.name)
         userObject.categoryArray.forEach((categoryObject)=>{
             //new graffics
             let labelsId=0;
@@ -100,6 +97,16 @@ const howMuchPointsAddsThisQuestion = (questionDifficulty)=>{
         default:
         console.error('Something went wrong when calculation of howMuchPointsAddsThisQuestion depending of the difficulty happened')
         return "Nan"
+    }
+}
+const background =(difficulty)=>{
+    switch(difficulty){
+        case "easy":
+            return "bg-primary" ; 
+        case "medium":
+            return "bg-warning"
+        case "hard":
+            return "bg-dark"
     }
 }
 
@@ -187,25 +194,13 @@ const showQuestionInTheHtml =(questionObject)=>{
     addHtmlElementToDiv("div","headerCardDiv",cumulativePoint+"/"+maxPoints,{id:"centerHeaderCardDiv"})
     addHtmlElementToDiv("div","headerCardDiv",cumulativePointPercentage.toFixed(2)+"%",{id:"rightHeaderCardDiv"})
     addHtmlElementToDiv("div","mainCardDiv","",{id:"bodyCardDiv"},["card-body","d-flex","flex-column","align-items-center"])
-    const background =(difficulty)=>{
-        switch(difficulty){
-            case "easy":
-                return "bg-primary" ; 
-            case "medium":
-                return "bg-warning"
-            case "hard":
-                return "bg-dark"
-        }
-    }
-    addHtmlElementToDiv("h5","bodyCardDiv",questionObject.difficulty.toUpperCase(),{id:"bodyCardH4"},["card-title",background(questionObject.difficulty),"rounded"])
-    addHtmlElementToDiv("p","bodyCardDiv",questionObject.question,{id:"bodyCardParagraph"},["card-text"])
-
-    //
-    //addHtmlElementToDiv("p","questionsTextDiv",questionObject.question)
     
+    addHtmlElementToDiv("h5","bodyCardDiv",questionObject.difficulty.toUpperCase(),{id:"bodyCardH4"},["card-title",background(questionObject.difficulty),"rounded","p-3"])
+    addHtmlElementToDiv("p","bodyCardDiv",questionObject.question.replace(/&quot;/g, '"'),{id:"bodyCardParagraph"},["card-text"])
+ 
     possibleAnswersArr.forEach((possibleAnswer)=>{
         const rightAnswerValue = possibleAnswer == questionObject.correct_answer ? "true":"false"
-        const btn = addHtmlElementToDiv("button","answerButtonsDiv",possibleAnswer,{type:"button",rightanswer:rightAnswerValue},["btn","btn-primary","gap-3","m-1"])
+        const btn = addHtmlElementToDiv("button","answerButtonsDiv",possibleAnswer.replace(/&quot;/g, '"'),{type:"button",rightanswer:rightAnswerValue},["btn","btn-primary","gap-3","m-1"])
         btn.addEventListener('click',showAnswerResoult)
     })
 
@@ -222,8 +217,6 @@ const addCategoryPlayedByUser =(category)=>{
 }
 
 const chooseCategoryByButton=(event)=>{
-    //console.log('Event', event.target.getAttribute("apiid"))
-    //console.log('Event', event.target.childNodes[0].textContent)
     categoryMain= event.target.childNodes[0].textContent
     addCategoryPlayedByUser(categoryMain)
 
@@ -259,9 +252,9 @@ const startQuizFunction = () =>{
         maxPoints = 0
         cumulativePoint = 0
         cumulativePointPercentage =0
-
+        addHtmlElementToDiv("div","categoriesButtonsDiv","",{id:"categoriesOnlyuttonsDiv"},["d-flex","flex-wrap","justify-content-center"])
         res.data.trivia_categories.map((category)=>{
-            const btn = addHtmlElementToDiv("button","categoriesButtonsDiv",category.name,{type:"button",apiId:category.id},["btn","btn-primary","gap-3","m-1"])
+            const btn = addHtmlElementToDiv("button","categoriesOnlyuttonsDiv",category.name,{type:"button",apiId:category.id},["btn","btn-primary","gap-3","m-1"])
             btn.addEventListener('click',chooseCategoryByButton)
             startQuizDiv.classList.add("d-none")
         })

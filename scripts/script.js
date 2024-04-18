@@ -53,7 +53,7 @@ const showStatistics =()=>{
         const userObject= JSON.parse(localStorage.getItem(localStorage.key(i)))
         console.log('testing Local Storage ', userObject)
         addHtmlElementToDiv("div","grafficsDiv","",{id:userObject.name})
-        addHtmlElementToDiv("p",userObject.name,"soy "+userObject.name)
+        addHtmlElementToDiv("h4",userObject.name,"Statistics of :  "+userObject.name)
         userObject.categoryArray.forEach((categoryObject)=>{
             //new graffics
             let labelsId=0;

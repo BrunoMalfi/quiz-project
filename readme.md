@@ -7,6 +7,7 @@ This project is a JavaScript quiz application where users can answer questions f
 
 ## Features
 - Logging in with a nickname.
+- Game istructions and start button
 - Choosing a quiz category.
 - Displaying quiz questions with multiple-choice answers.
 - Providing feedback on user answers.
@@ -38,5 +39,9 @@ This project is a JavaScript quiz application where users can answer questions f
 - `scripts/`: Directory containing JavaScript files for functionality.
 
 ## Preview
-[Add a screenshot or gif showcasing your project here]
+![chuck](./img/screenshot1.png)
+![chuck](./img/screenshot2.png)
+![chuck](./img/screenshot3.png)
+![chuck](./img/screenshot4.png)
+![chuck](./img/screenshot5.png)
 

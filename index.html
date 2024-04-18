@@ -7,11 +7,16 @@
     <link rel="stylesheet" href="styles/bootstrap.css">
     <link rel="stylesheet" href="styles/styles.css">
 </head>
-<body>
-    <h1>Quiz</h1>
-    <p>...</p>
+<body>    
+    <nav class="navbar navbar-expand-lg bg-primary mb-5" data-bs-theme="dark">
+        <div class="container-fluid d-flex justify-content-center">
+            <h1 class="navbar-brand">Quiz</h1>
+        </div>
+    </nav>
+  
+  
     
-    <div id="userDiv" class="d-flex justify-content-center" >
+    <div id="userDiv" class="d-flex justify-content-center mt-5" >
         <form id="userForm">
             <fieldset>
                 <legend>Logging</legend>
@@ -24,14 +29,40 @@
         </form>
     </div>
 
-    <div id="startQuizDiv" class="d-none d-flex justify-content-center">
-        <button type="button" id="startQuizBtn" class="btn btn-primary mt-3">Start Quiz</button> 
+    <div id="startQuizDiv" class="d-none d-flex flex-column justify-content-center">
+        <div id="startQuizDivButton" class="d-flex flex-wrap justify-content-center mb-3">
+            <h3>Game instructions :</h3>
+        </div>
+        
+        <div id="startQuizDivCardInstructions" class="d-flex flex-wrap justify-content-center mt-5">
+            <div class="card text-white bg-info mb-3" style="max-width: 40rem;">
+                <div class="card-header d-flex justify-content-between">
+                    <div id="cardInstructionsRight"><small>question position</small></div>
+                    <div id="cardInstructionsCenter"><small>cumulated score</small></div>
+                    <div id="cardInstructionsLeft"><small>percentage score</small></div>
+                </div>
+                <div class="card-body d-flex flex-column align-items-center">
+                    <h5 class="card-title rounded p-3 bg-warning">difficulty</h5>
+                    <p class="card-text">Questions can be :</p>
+                    <ul>
+                        <li class="card-text">Hard : 3 points</li>
+                        <li class="card-text">Medium : 2 points</li>
+                        <li class="card-text">Easy: 1 point </li>
+                    </ul>
+                    <p class="card-text">Difficulty can be identified in top of the question</p>
+                    <p class="card-text"> Question position and score can be found in the top </p>
+                    <p class="card-text">Possible aswer will appear down of the question as buttons</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="startQuizDivButton" class="d-flex flex-wrap justify-content-center mb-5">
+            <button type="button" id="startQuizBtn" class="btn btn-primary mt-3">Start Quiz</button> 
+        </div>
     </div>
 
     <div id="categoriesButtonsDiv" class="d-none d-flex flex-column justify-content-center">
         <p class="display-5 fw-bolde">Choose the category you want to play : </p>
-        
-
     </div>
 
     <div id="questionsDiv">
